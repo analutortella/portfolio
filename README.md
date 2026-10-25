@@ -49,9 +49,4 @@ No GitHub: **Settings → Pages → Source: Deploy from a branch → main / (roo
 ## Pendências de conteúdo
 
 - [ ] Identificar os temas dos reels 8 a 10 da Meta
-- [ ] Completar a descrição de “Rizoma Urbano” (tema e desafio de montagem)
-- [ ] Adicionar o link da playlist das web séries da Seja Digital
-- [ ] PDF do CV em `assets/docs/`
-- [ ] Corrigir o link do LinkedIn no rodapé (ainda está como `href="#"`)
 - [ ] Depoimentos (com autorização de quem escreveu)
-- [ ] Confirmar direito de exibir as peças da Meta e da Seja Digital
