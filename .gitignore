@@ -1,0 +1,14 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+
+# Mídia bruta e pesada: não versionar (hospedar no Vimeo/YouTube)
+*.mov
+*.mxf
+*.prproj
+*.aep
+assets/video/raw/
