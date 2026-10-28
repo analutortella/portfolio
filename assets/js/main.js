@@ -80,7 +80,7 @@ function initCarousel(root) {
 
   const behavior = prefersReducedMotion ? 'auto' : 'smooth';
   const step = () => {
-    const card = track.querySelector('.reel');
+    const card = track.querySelector('.reel, .carousel__card');
     const gap = parseFloat(getComputedStyle(track).columnGap) || 16;
     const cardWidth = card ? card.getBoundingClientRect().width + gap : track.clientWidth;
     // Avança quantos cards inteiros couberem na área visível (mínimo 1)

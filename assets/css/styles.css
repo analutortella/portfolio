@@ -468,6 +468,13 @@ a:hover .play::after { border-left-color: var(--accent); }
 @media (min-width: 900px)  { .reel { flex-basis: calc((100% - 16px * 3) / 4.4); } }
 @media (min-width: 1200px) { .reel { flex-basis: calc((100% - 16px * 4) / 5.3); } }
 
+.carousel__card {
+  flex: 0 0 82%;
+  scroll-snap-align: start;
+}
+@media (min-width: 600px)  { .carousel__card { flex-basis: 48%; } }
+@media (min-width: 900px)  { .carousel__card { flex-basis: calc((100% - 32px) / 3); } }
+
 .reel__link { display: flex; flex-direction: column; gap: 10px; text-decoration: none; }
 .reel__thumb { position: relative; display: block; aspect-ratio: 9 / 16; background: #000; overflow: hidden; transition: border-color .2s; }
 .reel__thumb.placeholder { display: flex; }
