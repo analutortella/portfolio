@@ -5,6 +5,7 @@ Thumbs.db
 # Editores
 .vscode/
 .idea/
+Portfólio Analu.code-workspace
 
 # Mídia bruta e pesada: não versionar (hospedar no Vimeo/YouTube)
 *.mov
