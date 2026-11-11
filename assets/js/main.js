@@ -3,45 +3,209 @@
    Sem dependências. Cada módulo inicializa só se o elemento existir.
    ========================================================= */
 
+const WEB3FORMS_ACCESS_KEY = '3ee62756-6f04-4a7e-8e1f-34d6ec1527d6';
+
 const CONFIG = {
-  whatsappNumber: '5511939119422',           // DDI + DDD + número, só dígitos
-  whatsappGreeting: 'Olá, Analu! Vi seu portfólio e quero conversar sobre um freela.',
   showreelEmbedUrl: 'https://www.youtube.com/embed/9iGIQwaVZ3U'
 };
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------- WhatsApp ---------- */
-function buildWhatsAppUrl(message) {
-  return `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
-}
+/* ---------- Modal de contato ---------- */
+function initContactModal() {
+  const modal = document.getElementById('contact-modal');
+  const form = document.getElementById('contact-form');
+  const formContainer = modal?.querySelector('[data-contact-form-container]');
+  const successContainer = modal?.querySelector('[data-contact-success]');
+  const successMessage = modal?.querySelector('[data-contact-success-message]');
+  const status = modal?.querySelector('[data-contact-status]');
+  const submitButton = modal?.querySelector('.contact-form__submit');
+  const emailLink = modal?.querySelector('[data-contact-email]');
+  const copyButton = modal?.querySelector('[data-copy-email]');
+  const copyStatus = modal?.querySelector('[data-copy-status]');
+  if (!modal || !form || !formContainer || !successContainer || !successMessage ||
+      !status || !submitButton || !emailLink || !copyButton || !copyStatus ||
+      typeof modal.showModal !== 'function') return;
 
-function initWhatsAppLinks() {
-  const url = buildWhatsAppUrl(CONFIG.whatsappGreeting);
-  document.querySelectorAll('.js-whatsapp').forEach((link) => {
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener';
+  const contactEmail = 'anatortella' + '@' + 'gmail.com';
+  const originalSubmitLabel = submitButton.textContent;
+  const openers = document.querySelectorAll('[data-open-contact]');
+  const closers = modal.querySelectorAll('[data-close-contact]');
+  const honeypot = form.elements.namedItem('botcheck');
+  let activeOpener = null;
+  let previousBodyOverflow = '';
+
+  form.elements.namedItem('access_key').value = WEB3FORMS_ACCESS_KEY;
+  emailLink.href = `mailto:${contactEmail}`;
+  emailLink.textContent = contactEmail;
+
+  const finishClose = () => {
+    modal.close();
+  };
+
+  const close = () => {
+    if (prefersReducedMotion) {
+      finishClose();
+      return;
+    }
+    modal.classList.add('is-closing');
+  };
+
+  const open = (event) => {
+    if (modal.open) return;
+    activeOpener = event.currentTarget;
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    modal.classList.remove('is-closing');
+    status.textContent = '';
+    copyStatus.textContent = '';
+    modal.showModal();
+    form.elements.namedItem('name').focus();
+  };
+
+  openers.forEach((button) => button.addEventListener('click', open));
+  closers.forEach((button) => button.addEventListener('click', close));
+
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) close();
   });
-}
 
-function initBriefForm() {
-  const form = document.getElementById('brief-form');
-  if (!form) return;
-
-  form.addEventListener('submit', (event) => {
+  modal.addEventListener('cancel', (event) => {
     event.preventDefault();
-    const data = new FormData(form);
-    const formato = (data.get('formato') || '').toString().trim();
-    const prazo = (data.get('prazo') || '').toString().trim();
-    const descricao = (data.get('descricao') || '').toString().trim();
+    close();
+  });
 
-    const lines = ['Olá, Analu! Vi seu portfólio e gostaria de conversar a respeito.'];
-    if (formato) lines.push(`Formato: ${formato}`);
-    if (prazo) lines.push(`Prazo: ${prazo}`);
-    if (descricao) lines.push(`Projeto: ${descricao}`);
+  modal.addEventListener('animationend', (event) => {
+    if (event.target === modal && event.animationName === 'contact-modal-out' && modal.open) {
+      finishClose();
+    }
+  });
 
-    window.open(buildWhatsAppUrl(lines.join('\n')), '_blank', 'noopener');
+  modal.addEventListener('close', () => {
+    modal.classList.remove('is-closing');
+    document.body.style.overflow = previousBodyOverflow;
+    formContainer.hidden = false;
+    successContainer.hidden = true;
+    successMessage.textContent = '';
+    status.textContent = '';
+    if (activeOpener?.isConnected) activeOpener.focus();
+    activeOpener = null;
+  });
+
+  modal.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusableElements = [...modal.querySelectorAll(
+      'button:not([disabled]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]), textarea:not([disabled]), a[href]'
+    )].filter((element) => element.getClientRects().length > 0);
+    if (!focusableElements.length) {
+      event.preventDefault();
+      return;
+    }
+
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
+    if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  const showCopyFeedback = (message) => {
+    copyStatus.textContent = message;
+  };
+
+  const copyWithFallback = () => {
+    const temporaryInput = document.createElement('textarea');
+    temporaryInput.value = contactEmail;
+    temporaryInput.setAttribute('readonly', '');
+    temporaryInput.className = 'visually-hidden';
+    document.body.append(temporaryInput);
+    temporaryInput.select();
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } catch {
+      copied = false;
+    } finally {
+      temporaryInput.remove();
+    }
+    showCopyFeedback(copied ? 'Copiado!' : 'Não foi possível copiar. Selecione o e-mail acima.');
+  };
+
+  copyButton.addEventListener('click', async () => {
+    copyStatus.textContent = '';
+    if (!navigator.clipboard?.writeText) {
+      copyWithFallback();
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(contactEmail);
+      showCopyFeedback('Copiado!');
+    } catch {
+      copyWithFallback();
+    }
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (honeypot.checked) return;
+
+    const formData = new FormData(form);
+    const name = formData.get('name').toString().trim();
+    const payload = Object.fromEntries(formData.entries());
+    payload.subject = `Novo contato pelo portfólio: ${name}`;
+    payload.from_name = 'Portfólio Analu Tortella';
+    payload.access_key = WEB3FORMS_ACCESS_KEY;
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Enviando…';
+    submitButton.setAttribute('aria-busy', 'true');
+    status.textContent = '';
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        status.textContent = 'Não foi possível enviar agora.';
+        return;
+      }
+
+      form.reset();
+      form.elements.namedItem('access_key').value = WEB3FORMS_ACCESS_KEY;
+      formContainer.hidden = true;
+      successContainer.hidden = false;
+      successMessage.textContent = 'Mensagem enviada! A Analu vai responder em breve.';
+      successContainer.querySelector('[data-close-contact]').focus();
+    } catch {
+      status.textContent = 'Não foi possível enviar agora.';
+    } finally {
+      window.clearTimeout(timeoutId);
+      submitButton.disabled = false;
+      submitButton.textContent = originalSubmitLabel;
+      submitButton.removeAttribute('aria-busy');
+    }
   });
 }
 
@@ -204,8 +368,7 @@ function initYear() {
 
 /* ---------- Boot ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-  initWhatsAppLinks();
-  initBriefForm();
+  initContactModal();
   initNav();
   document.querySelectorAll('[data-carousel]').forEach(initCarousel);
   initHeroAudio();

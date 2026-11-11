@@ -593,6 +593,7 @@ a:hover .play::after { border-left-color: var(--accent); }
 }
 .contact__intro { flex: 1 1 360px; display: flex; flex-direction: column; gap: 16px; }
 .contact__intro p { color: var(--muted); }
+.contact__cta { align-self: center; }
 .contact__title {
   font-size: clamp(34px, 5vw, 52px);
   line-height: 1.05;
@@ -600,12 +601,6 @@ a:hover .play::after { border-left-color: var(--accent); }
   letter-spacing: -.015em;
 }
 
-.brief {
-  flex: 1 1 440px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field--full { grid-column: 1 / -1; }
 .field label { font-size: 13px; color: var(--muted); }
@@ -627,10 +622,6 @@ a:hover .play::after { border-left-color: var(--accent); }
 .field input:focus,
 .field select:focus,
 .field textarea:focus { border-color: var(--accent); outline: none; }
-
-@media (max-width: 520px) {
-  .brief { grid-template-columns: 1fr; }
-}
 
 /* ---------- Footer ---------- */
 .site-footer { border-top: 1px solid var(--line); }
@@ -656,13 +647,111 @@ a:hover .play::after { border-left-color: var(--accent); }
   align-items: center;
   justify-content: center;
   width: 58px; height: 58px;
+  padding: 0;
+  border: 0;
   border-radius: 999px;
   background: var(--accent);
   color: var(--on-accent);
+  cursor: pointer;
   box-shadow: 0 6px 24px rgba(0, 0, 0, .5);
 }
 .fab:hover { color: var(--on-accent); background: var(--accent-hover); }
 @media (min-width: 900px) { .fab { display: none; } }
+
+/* ---------- Modal de contato ---------- */
+.contact-modal {
+  width: min(100% - 32px, 680px);
+  max-width: 680px;
+  max-height: min(90vh, 900px);
+  max-height: min(90dvh, 900px);
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+}
+.contact-modal::backdrop { background: rgba(0, 0, 0, .85); }
+.contact-modal[open] { animation: contact-modal-in .18s ease-out both; }
+.contact-modal.is-closing { animation: contact-modal-out .16s ease-in both; }
+.contact-modal__content { padding: 24px; }
+.contact-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.contact-modal__title { margin-top: 6px; font-size: clamp(22px, 4vw, 30px); line-height: 1.2; }
+.contact-modal__close { flex: 0 0 48px; }
+.contact-modal__body[hidden],
+.contact-modal__success[hidden] { display: none; }
+.contact-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.contact-form__optional { font-size: 12px; }
+.contact-form__submit:disabled { cursor: wait; opacity: .7; }
+.contact-form__privacy,
+.contact-modal__direct,
+.contact-modal__copy-status { color: var(--muted); font-size: 13px; }
+.contact-form__status:empty { display: none; }
+.contact-form__status { color: var(--text); font-size: 14px; }
+.honeypot-input {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.contact-modal__success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 24px;
+  font-size: 18px;
+}
+.contact-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.contact-modal__email { display: inline-block; margin-top: 4px; }
+.contact-modal__copy { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.contact-modal__copy .btn { min-width: 104px; }
+
+@keyframes contact-modal-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes contact-modal-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+@media (max-width: 600px) {
+  .contact-modal {
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  .contact-modal__content { min-height: 100%; padding: 20px; }
+  .contact-form { grid-template-columns: 1fr; }
+  .contact-modal__footer { align-items: flex-start; }
+  .contact-modal__copy .btn { min-height: 48px; }
+}
 
 /* ---------- Modal do showreel ---------- */
 .reel-modal {

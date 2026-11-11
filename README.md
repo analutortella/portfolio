@@ -13,7 +13,7 @@ analu-portfolio/
     ├── css/
     │   └── styles.css      # Tokens de cor/tipografia no topo (:root)
     ├── js/
-    │   └── main.js         # WhatsApp, menu mobile, carrossel, modal do showreel
+    │   └── main.js         # Contato por e-mail, menu mobile, carrossel, modal do showreel
     ├── img/
     │   ├── favicon.svg
     │   ├── reels/          # Thumbs dos reels da Meta
@@ -48,5 +48,4 @@ No GitHub: **Settings → Pages → Source: Deploy from a branch → main / (roo
 
 ## Pendências de conteúdo
 
-- [ ] Identificar os temas dos reels 8 a 10 da Meta
 - [ ] Depoimentos (com autorização de quem escreveu)
